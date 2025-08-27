@@ -1,3 +1,5 @@
+using MentalHealthAppApi.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
@@ -9,6 +11,14 @@ builder.Services.AddCors(options =>
         .AllowCredentials()
     );
 });
+
+builder.Services.AddSingleton<DiseasePredictionModelService>(sp =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+        var modelPath = config["DiseasePredictionModel:Path"]
+            ?? throw new InvalidOperationException("Disease prediction model path is not configured.");
+        return new DiseasePredictionModelService(modelPath);
+    });
 
 // Add services to the container.
 

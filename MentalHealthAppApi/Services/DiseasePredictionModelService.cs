@@ -13,7 +13,7 @@ namespace MentalHealthAppApi.Services
             _inferenceSession = new InferenceSession(modelPath);
         }
 
-        public float[] PredictProbability(int[] answers)
+        public float[] PredictProbability(float[] answers)
         {
             if(answers.Length != 51)
             {
@@ -22,7 +22,7 @@ namespace MentalHealthAppApi.Services
 
             // wielowymiarowy tensor, wejście do modelu predykcyjnego ONNX
             // DenseTensor przechowuje dane w formacie, które ONNX potrafi odczytać
-            var inputTensor = new DenseTensor<int>(answers, new int[] { 1, 51 });
+            var inputTensor = new DenseTensor<float>(answers, new int[] { 1, 51 });
 
             // tworzy NamedOnnxValue z inputTensor i nazwy jaką ma input w modelu ONNX
             //NamedOnnxValue połączona nazwa + wartość wejścia/wyjścia
@@ -36,7 +36,7 @@ namespace MentalHealthAppApi.Services
 
             // results zawiera jedno wyjście, którt składa się z 5ciu prawdopodobieństw dla 5 klas
             // konwersja tensora do płaskiej listy
-            var predictedProbabilities = results.First().AsEnumerable<float>().ToArray();
+            var predictedProbabilities = results[0].AsEnumerable<float>().ToArray();
 
             return predictedProbabilities;
         }

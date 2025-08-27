@@ -1,4 +1,5 @@
-﻿using MentalHealthAppApi.Services;
+﻿using MentalHealthAppApi.Models;
+using MentalHealthAppApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentalHealthAppApi.Controllers
@@ -16,16 +17,22 @@ namespace MentalHealthAppApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult PredictDisease([FromBody] int[] answers)
+        public IActionResult PredictDisease([FromBody] DiseasePredictionRequest request)
         {
             //IActionResult rezultat akcji kontrolera
             try
             {
-                var predictionProbabilites = _modelService.PredictProbability(answers)
+                var predictionProbabilites = _modelService.PredictProbability(request.Answers)
                     .Select(p => p * 100)
                     .ToArray();
 
-                return Ok( new { predictionProbabilites });
+                string[] diseaseNames = { "Bipolar disorder", "Schizophrenia", "Depression", "Anxiety disorder", "PTSD" };
+
+                var result = diseaseNames
+                    .Zip(predictionProbabilites, (name, prob) => new { Disease = name, Probability = prob })
+                    .ToArray();
+
+                return Ok( new { predictionProbabilites = result });
             }
             catch (Exception ex)
             {
