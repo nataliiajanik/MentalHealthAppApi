@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MentalHealthAppApi.Controllers
 {
     [ApiController]
-    [Route("api/diseasePrediction")]
+    [Route("api/diseasesPredictions")]
     public class DiseasePredictionController : ControllerBase
     {
         //sesja z załadowanym modelem ONNX aby można było go wielokrotnie wyłowywać bez osobnego załadowywania
@@ -29,10 +29,10 @@ namespace MentalHealthAppApi.Controllers
                 string[] diseaseNames = { "Bipolar disorder", "Schizophrenia", "Depression", "Anxiety disorder", "PTSD" };
 
                 var result = diseaseNames
-                    .Zip(predictionProbabilites, (name, prob) => new { Disease = name, Probability = prob })
-                    .ToArray();
+                    .Zip(predictionProbabilites, (name, prob) => new DiseasePredictionResult { Disease = name, Probability = prob })
+                    .ToList();
 
-                return Ok( new { predictionProbabilites = result });
+                return Ok( new DiseasePredictionResponse { Predictions = result });
             }
             catch (Exception ex)
             {
